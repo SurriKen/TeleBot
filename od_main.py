@@ -15,8 +15,8 @@ def start(message):
 
     btn1 = types.KeyboardButton("Detect objects on image")
     markups.row(btn1)
-    btn4 = types.InlineKeyboardButton("Progress bar", callback_data='progress')
-    markups.row(btn4)
+    # btn4 = types.InlineKeyboardButton("Progress bar", callback_data='progress')
+    # markups.row(btn4)
 
     bot.send_message(
         chat_id=message.chat.id,
@@ -40,28 +40,28 @@ def main(message):
             message=message,
             callback=yolo_detect_image
         )
-    elif message.text == 'Progress bar':
-        msg = bot.send_message(
-            text=f'Progressing 0 %...',
-            chat_id=message.chat.id,
-        )
-        print(msg)
-        for i in range(100):
-            # bot.delete_message(
-            #     chat_id=message.chat.id,
-            #     message_id=message.message_id - 1,
-            # )
-            bot.edit_message_text(
-                text=f'Progressing {i} %...',
-                chat_id=msg.chat.id,
-                message_id=msg.message_id,
-            )
-            time.sleep(1)
-        bot.send_message(
-            text=f'Progress is finished',
-            chat_id=message.chat.id,
-            # message_id=message.message_id,
-        )
+    # elif message.text == 'Progress bar':
+    #     msg = bot.send_message(
+    #         text=f'Progressing 0 %...',
+    #         chat_id=message.chat.id,
+    #     )
+    #
+    #     for i in range(100):
+    #         # bot.delete_message(
+    #         #     chat_id=message.chat.id,
+    #         #     message_id=message.message_id - 1,
+    #         # )
+    #         bot.edit_message_text(
+    #             text=f'Progressing {i} %...',
+    #             chat_id=msg.chat.id,
+    #             message_id=msg.message_id,
+    #         )
+    #         time.sleep(1)
+    #     bot.send_message(
+    #         text=f'Progress is finished',
+    #         chat_id=message.chat.id,
+    #         # message_id=message.message_id,
+    #     )
 
 
 def yolo_detect_image(message):
