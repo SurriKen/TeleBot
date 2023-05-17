@@ -1,6 +1,8 @@
 import telebot
 import webbrowser
+import sqlite3
 
+from PIL import Image
 from telebot import types
 
 bot = telebot.TeleBot('6134635572:AAGkqaUA2vCVchHYgX1N22aoklRAwMRxVaA')
@@ -16,6 +18,16 @@ def get_photo(message):
     btn2 = types.InlineKeyboardButton("Delete file", callback_data='delete')
     btn3 = types.InlineKeyboardButton("Edit text", callback_data='edit')
     markups.row(btn2, btn3)
+
+    fileID = message.photo[-1].file_id
+    file_info = bot.get_file(fileID)
+    dowloaded_file = bot.download_file(file_info.file_path)
+
+    with open('temp/image.jpg', 'wb') as new_file:
+        new_file.write(dowloaded_file)
+
+    # img = Image.open(file.file_path)
+    # img.save('temp/image.jpg')
     bot.reply_to(
         message=message,
         text='Nice Photo!',
@@ -46,6 +58,9 @@ def start(message):
     btn2 = types.KeyboardButton("Google it")
     btn3 = types.KeyboardButton("Github")
     markups.row(btn2, btn3)
+    btn4 = types.InlineKeyboardButton("Progress bar", callback_data='progress')
+    markups.row(btn4)
+
     bot.send_message(
         chat_id=message.chat.id,
         text=f"Hi, {message.from_user.first_name} {message.from_user.last_name}!",
@@ -80,6 +95,7 @@ def on_click(message):
             chat_id=message.chat.id,
             photo=file
         )
+
 
 @bot.message_handler(commands=['start', 'main', 'test'])
 def main(message):
