@@ -1,5 +1,8 @@
 import colorsys
 import random
+import shutil
+
+import requests
 from torchvision.utils import draw_bounding_boxes
 import numpy as np
 import torch
@@ -7,6 +10,8 @@ import torchvision
 from ultralytics import YOLO
 import os
 import wget
+import requests
+from urllib.parse import urlencode
 
 
 class YOLOv8:
@@ -18,6 +23,8 @@ class YOLOv8:
             if not os.path.isfile('yolov8n.pt'):
                 self.load_weights()
             self.model = YOLO('yolov8n.pt')
+        self.message = ''
+        self.status = True
 
 
     @staticmethod
@@ -99,8 +106,44 @@ class YOLOv8:
                 color_list=cl,
                 coordinates=coords
             )
+            self.message = 'There is some objects on the image'
+            self.status = True
+        else:
+            shutil.copy2(image_path, 'temp/predict.jpg')
+            self.message = "No object was found"
+            self.status = False
+
+
+    def detect_video(self, video_path, save_path='temp/predict.mp4'):
+        self.model.predict(source=video_path, save=True)
+        vid_name = video_path.split('/')[-1]
+        shutil.copy2(src=f'runs/detect/predict/{vid_name}', dst=save_path)
+        shutil.rmtree('runs')
+        self.message = 'Video detection is finished'
+        self.status = True
 
 
 if __name__ == "__main__":
-    model = YOLOv8()
-    model.detect_image(image_path='temp/maxresdefault.jpg')
+    link = 'https://disk.yandex.ru/i/iuGA8ffxn2e4CQ'
+    save = 'temp/big_video.mp4'
+
+    import requests
+    from urllib.parse import urlencode
+
+    base_url = 'https://cloud-api.yandex.net/v1/disk/public/resources/download?'
+    public_key = link  # Сюда вписываете вашу ссылку
+    google_url = "https://docs.google.com/uc?export=download"
+    google_key = 'https://photos.google.com/photo/AF1QipP30--t168Nfz4v6rLQ1c089rnUFAnKS3iM85sB'
+
+    # Получаем загрузочную ссылку
+    final_url = google_url + urlencode(dict(public_key=google_key))
+    response = requests.get(final_url)
+    download_url = response.json()['href']
+
+    # Загружаем файл и сохраняем его
+    download_response = requests.get(download_url)
+    with open(save, 'wb') as f:  # Здесь укажите нужный путь к файлу
+        f.write(download_response.content)
+
+    # model = YOLOv8()
+    # model.detect_video(video_path='video.mp4')
