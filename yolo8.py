@@ -106,7 +106,10 @@ class YOLOv8:
                 color_list=cl,
                 coordinates=coords
             )
-            self.message = 'There is some objects on the image'
+            self.message = 'There is some objects on the image\n'
+            for lbl in labels:
+                self.message = f"{self.message}{lbl}\n"
+
             self.status = True
         else:
             shutil.copy2(image_path, 'temp/predict.jpg')
